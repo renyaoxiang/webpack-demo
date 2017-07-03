@@ -1,9 +1,4 @@
 import * as Promise from 'bluebird'
-export class Result {
-    constructor(public readonly result: any = null) {
-
-    }
-}
 
 export class UnpendingResult {
     private isInit: Promise<any>
