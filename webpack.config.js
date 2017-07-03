@@ -4,8 +4,9 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = [{
 	devtool: 'inline-source-map',
 	entry: {
-		index: ['./src/index.ts'],
-		todo: ['./src/todo.tsx'],
+		index: ['./src/boot/index.ts'],
+		todo: ['./src/usr/local/todo/todo.tsx'],
+		redux: ['./src/usr/local/redux/redux.tsx'],
 	},
 	output: {
 		path: __dirname + '/dist/',
@@ -39,6 +40,12 @@ module.exports = [{
 		new HtmlWebpackPlugin({
 			filename: 'todo.html',
 			chunks: ['todo'],
+			hash: true,
+			inject: 'head'
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'redux.html',
+			chunks: ['redux'],
 			hash: true,
 			inject: 'head'
 		})
