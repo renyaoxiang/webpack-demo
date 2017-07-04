@@ -1,12 +1,26 @@
 {
-  "defaultSeverity": "error",
-  "extends": ["tslint:recommended"],
-  "jsRules": {},
-  "rules": {
-    "eofline": true,
-    "semicolon": ["never"],
-    "quotemark": ["single", "jsx-single"],
-    "indent": [true, "tabs", 4]
-  },
-  "rulesDirectory": []
+	"defaultSeverity": "error",
+	"extends": [
+		"tslint:recommended"
+	],
+	"jsRules": {},
+	"rules": {
+		"max-classes-per-file": [
+			false
+		],
+		"eofline": true,
+		"semicolon": [
+			"never"
+		],
+		"quotemark": [
+			"single",
+			"jsx-single"
+		],
+		"indent": [
+			true,
+			"tabs",
+			4
+		]
+	},
+	"rulesDirectory": []
 }
