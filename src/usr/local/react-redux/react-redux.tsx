@@ -26,13 +26,6 @@ const Container = (props) => {
 		<App> </App>
 	</Provider>
 }
-function get() {
-	return Promise.resolve(new Date())
-}
-async function getTime() {
-	const time = await get()
-	return time
-}
 
 @connect((state) => {
 	return state
@@ -40,7 +33,7 @@ async function getTime() {
 	return {
 	}
 })
-class App extends Component<any, any> {
+export class App extends Component<any, any> {
 	public render() {
 		return <div>{this.props.num}</div>
 	}

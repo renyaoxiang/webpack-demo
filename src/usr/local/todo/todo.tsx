@@ -65,11 +65,7 @@ class Todo extends Component<any, any> {
 			</section>
 		</div>
 	}
-<<<<<<< HEAD
 	private toggleState(task) {
-=======
-	toggleState(task) {
->>>>>>> 4d41d05bfbbb8dead3c5fccf3d23fda64c65fd49
 		if (task.state === TaskState.Done) {
 			task.state = TaskState.Todo
 		} else {
@@ -79,11 +75,7 @@ class Todo extends Component<any, any> {
 			tasks: [...this.state.tasks]
 		})
 	}
-<<<<<<< HEAD
 	private setInput(value) {
-=======
-	setInput(value) {
->>>>>>> 4d41d05bfbbb8dead3c5fccf3d23fda64c65fd49
 		this.setState({
 			inputValue: value,
 			tasks: [...this.state.tasks, new Task(value)]

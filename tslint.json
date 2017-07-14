@@ -5,6 +5,8 @@
 	],
 	"jsRules": {},
 	"rules": {
+		"no-consecutive-blank-lines": false,
+		"arrow-parens": false,
 		"no-trailing-whitespace": true,
 		"ordered-imports": [
 			false
