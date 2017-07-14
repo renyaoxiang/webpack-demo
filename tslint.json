@@ -5,6 +5,17 @@
 	],
 	"jsRules": {},
 	"rules": {
+		"object-literal-sort-keys": false,
+		"trailing-comma": [
+			false
+		],
+		"arrow-parens": false,
+		"ordered-imports": [
+			false
+		],
+		"no-console": [
+			"log"
+		],
 		"max-classes-per-file": [
 			false
 		],
