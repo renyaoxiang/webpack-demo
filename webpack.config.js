@@ -8,6 +8,7 @@ module.exports = [{
 		todo: ['./src/usr/local/todo/todo.tsx'],
 		redux: ['./src/usr/local/redux/redux.tsx'],
 		'react-redux': ['./src/usr/local/react-redux/react-redux.tsx'],
+		reduxTodo: ['./src/usr/local/redux-todo/reduxTodo.tsx'],
 	},
 	output: {
 		path: __dirname + '/dist/',
@@ -47,6 +48,12 @@ module.exports = [{
 		new HtmlWebpackPlugin({
 			filename: 'redux.html',
 			chunks: ['redux'],
+			hash: true,
+			inject: 'head'
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'reduxTodo.html',
+			chunks: ['reduxTodo'],
 			hash: true,
 			inject: 'head'
 		}),

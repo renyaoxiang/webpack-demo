@@ -38,6 +38,7 @@
     "react-redux": "^5.0.5",
     "redux": "^3.7.1",
     "style": "0.0.3",
-    "todomvc-app-css": "^2.1.0"
+    "todomvc-app-css": "^2.1.0",
+    "typescript": "^2.4.1"
   }
 }
