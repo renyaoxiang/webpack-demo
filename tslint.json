@@ -5,6 +5,19 @@
 	],
 	"jsRules": {},
 	"rules": {
+		"no-trailing-whitespace": true,
+		"ordered-imports": [
+			false
+		],
+		"object-literal-sort-keys": false,
+		"trailing-comma": [
+			false
+		],
+		"no-console": [
+			"log"
+		],
+		"callable-types": false,
+		"no-unused-expression": false,
 		"max-classes-per-file": [
 			false
 		],
