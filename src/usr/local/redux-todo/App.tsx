@@ -19,9 +19,9 @@ const reducer = (state = initState, action) => {
 		}
 		case 'todo_create': return {
 			todos: [{
-				id: todos.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
+				id: todos.reduce((maxId, todo) => Math.max(todo.id, maxId), 0) + 1,
 				text: action.payload.text,
-				complete: true
+				complete: false
 			},
 			...todos]
 		}

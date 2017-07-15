@@ -100,7 +100,7 @@ export const AppContent = connect(state => ({
 			dispatch(action)
 		},
 		chain: () => {
-			return Promise.resolve(123)
+			return (dispatch, getState) => Promise.resolve(123)
 		}
 	})
 )(AppContent2)
