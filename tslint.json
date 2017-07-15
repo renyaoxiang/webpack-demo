@@ -5,6 +5,8 @@
 	],
 	"jsRules": {},
 	"rules": {
+		"object-literal-shorthand": false,
+		"no-shadowed-variable": false,
 		"no-consecutive-blank-lines": false,
 		"arrow-parens": false,
 		"no-trailing-whitespace": true,

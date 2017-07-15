@@ -1,7 +1,7 @@
 import * as $ from 'jquery'
 import * as React from 'react'
 import { Component } from 'react'
-import { connect, Provider } from 'react-redux'
+import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import { render } from 'react-dom'
 
@@ -27,12 +27,7 @@ const Container = (props) => {
 	</Provider>
 }
 
-@connect((state) => {
-	return state
-}, (dispatch) => {
-	return {
-	}
-})
+
 export class App extends Component<any, any> {
 	public render() {
 		return <div>{this.props.num}</div>
