@@ -43,6 +43,7 @@
     "redux-thunk": "^2.2.0",
     "style": "0.0.3",
     "todomvc-app-css": "^2.1.0",
-    "typescript": "^2.4.1"
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.2"
   }
 }
