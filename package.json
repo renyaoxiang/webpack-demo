@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --progress --colors --host 192.168.1.168 --port 8880 --inline --content-base src/",
+    "start": "webpack-dev-server --progress --colors --host 127.0.0.1 --port 8880 --inline --content-base src/",
     "dev": "webpack-dev-server  --progress --colors --hot --port 8880 --inline --content-base ./dist",
     "build": "webpack --progress --colors"
   },
@@ -32,6 +32,7 @@
     "@types/redux-actions": "^1.2.6",
     "@types/redux-thunk": "^2.1.32",
     "bluebird": "^3.5.0",
+    "node-sdk": "file:lib/aip-node-sdk-1.2.0",
     "prop-types": "^15.5.10",
     "raw": "^0.1.4",
     "react": "^15.6.1",
