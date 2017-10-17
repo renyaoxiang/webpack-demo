@@ -32,6 +32,7 @@
     "@types/redux-actions": "^1.2.6",
     "@types/redux-thunk": "^2.1.32",
     "bluebird": "^3.5.0",
+    "jquery": "^3.2.1",
     "node-sdk": "file:lib/aip-node-sdk-1.2.0",
     "prop-types": "^15.5.10",
     "raw": "^0.1.4",
