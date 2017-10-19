@@ -22,7 +22,6 @@ $(() => {
 	const end = Position.of(4, 4);
 	let shortest: Box[] = new Array(width * height);
 	const onFinish = (paths: Box[]) => {
-		paths = [grid.getBox(start), ...paths]
 		if (shortest.length > paths.length) {
 			shortest = paths
 		}
