@@ -4,6 +4,10 @@
 		"module": "amd",
 		"moduleResolution": "node",
 		"target": "es6",
+		"lib": [
+			"dom",
+			"es2017"
+		],
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUnusedLocals": true,
