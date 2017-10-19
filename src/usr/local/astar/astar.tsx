@@ -55,7 +55,6 @@ class Grid {
 				this.boxList[h * width + w] = new Box(w, h, this)
 			}
 		}
-
 	}
 
 	forEach(callback: (box: Box) => void) {
@@ -81,7 +80,6 @@ class Grid {
 
 class Box {
 	public usable: boolean = true
-	public previous: Box = null
 	constructor(public readonly w: number, public readonly h: number,
 		public readonly grid: Grid, public isEmpty: boolean = true) {
 	}
@@ -124,7 +122,7 @@ class AStarSupport {
 		if (this.src.equals(this.dist)) {
 			this.onFinish([this.src])
 		} else {
-			const subList = this.grid.getBox(this.src).getNeighbour()
+			const subList = this.src.getNeighbour()
 			for (let sub of subList) {
 				new AStarSupport(this.grid, sub, this.dist, (paths) => {
 					this.onFinish([this.src, ...paths])
@@ -132,15 +130,6 @@ class AStarSupport {
 			}
 		}
 		this.src.usable = true
-	}
-	public getPaths(): Box[] {
-		const result: Box[] = []
-		let currentBox = this.grid.getBox(this.dist)
-		do {
-			result.unshift(currentBox)
-			currentBox = currentBox.previous
-		} while (currentBox)
-		return result.length === 1 ? [] : result
 	}
 
 }
