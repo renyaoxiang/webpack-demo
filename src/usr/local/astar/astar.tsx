@@ -28,6 +28,7 @@ $(() => {
 	}
 	new AStar(grid, start, end, onFinish).search()
 	grid.print(shortest)
+	shortest.forEach(it => console.log(it))
 })
 
 
@@ -36,10 +37,11 @@ class AStar {
 		public readonly dist: Position, private readonly onFinish: (paths: Box[]) => void) {
 	}
 	public search() {
-		new AStarSupport(this.grid, this.grid.getBox(this.src),
-			this.grid.getBox(this.dist), (paths: Box[]) => {
-				this.onFinish([this.grid.getBox(this.src), ...paths])
-			}).search()
+		const srcBox = this.grid.getBox(this.src)
+		const distBox = this.grid.getBox(this.dist)
+		new AStarSupport(this.grid, srcBox, distBox, (paths: Box[]) => {
+			this.onFinish([...paths])
+		}).search()
 	}
 }
 
@@ -102,7 +104,9 @@ class Box {
 		}
 		const subPosition1 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h))
 		const subPosition2 = [(position.h - 1), (position.h + 1)].map(it => new Position(position.w, it))
-		return [...subPosition1, ...subPosition2].filter(it => {
+		const subPosition3 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h + 1))
+		const subPosition4 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h - 1))
+		return [...subPosition1, ...subPosition2, ...subPosition3, ...subPosition4].filter(it => {
 			return it.w >= 0 && it.h >= 0 && it.w < this.grid.width && it.h < this.grid.height
 		})
 	}
