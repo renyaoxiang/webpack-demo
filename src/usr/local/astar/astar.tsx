@@ -124,7 +124,7 @@ class AStarSupport {
 			let resultPaths = null
 			for (let sub of subList) {
 				new AStarSupport(this.grid, sub, this.dist, (paths) => {
-					if (resultPaths != null) {
+					if (resultPaths == null) {
 						resultPaths = paths
 					} else {
 						if (resultPaths.length > paths.length) {
