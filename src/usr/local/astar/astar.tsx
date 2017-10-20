@@ -2,8 +2,6 @@ import * as $ from 'jquery'
 import * as _ from 'lodash'
 import { table } from 'table'
 
-
-
 $(() => {
 	const wall: Position[] = [Position.of(3, 0), Position.of(3, 1), Position.of(3, 2), Position.of(3, 3)]
 	const width = 5;
@@ -18,15 +16,13 @@ $(() => {
 	})
 	grid.print()
 
-	const start = Position.of(0, 0);
-	const end = Position.of(4, 4);
-	let shortest: Box[] = new Array(width * height);
+	const start = Position.of(1, 0);
+	const end = Position.of(4, 1);
 	const onFinish = (paths: Box[]) => {
-		shortest = paths
+		grid.print(paths)
+		console.log(...paths)
 	}
 	new AStar(grid, start, end, onFinish).search()
-	grid.print(shortest)
-	shortest.forEach(it => console.log(it))
 })
 
 
@@ -83,7 +79,26 @@ class Grid {
 }
 
 class Box {
+	search(onSearched: () => void, onUnsearched: () => void): any {
+		if (this.searched) {
+			onSearched()
+		} else {
+			onUnsearched()
+		}
+	}
+	find(onFind: (paths: Box[]) => void) {
+		if (this.paths !== null) {
+			onFind(this.paths)
+		}
+	}
+	batch(callback: () => void): any {
+		this.usable = false
+		callback()
+		this.usable = true
+	}
 	public usable: boolean = true
+	public searched: boolean = false
+	public paths: Box[] = null
 	constructor(public readonly w: number, public readonly h: number,
 		public readonly grid: Grid, public isEmpty: boolean = true) {
 	}
@@ -122,23 +137,36 @@ class AStarSupport {
 		private readonly onFinish: (paths: Box[]) => void) {
 	}
 	public search() {
-		this.src.usable = false
-		if (this.src.equals(this.dist)) {
-			this.onFinish([this.src])
-		} else {
-			const subList = this.src.getNeighbour()
-			subList.sort((o1, o2) => this.grid.compare(o1, o2, this.dist))
-			let resultPaths: Box[] = null
-			for (let sub of subList) {
-				new AStarSupport(this.grid, sub, this.dist, (paths) => {
-					resultPaths = this.getShorterPaths(resultPaths, paths)
-				}).search()
-			}
-			if (resultPaths !== null) {
-				this.onFinish([this.src, ...resultPaths])
-			}
-		}
-		this.src.usable = true
+		this.src.batch(() => {
+			this.src.search(() => {
+				this.src.find((paths) => {
+					this.onFinish(paths)
+				})
+			}, () => {
+				if (this.src.equals(this.dist)) {
+					this.src.paths = [this.src]
+					this.src.searched = true
+					this.onFinish(this.src.paths)
+				} else {
+					const subList = this.src.getNeighbour()
+					subList.sort((o1, o2) => this.grid.compare(o1, o2, this.dist))
+					let resultPaths: Box[] = null
+					for (let sub of subList) {
+						new AStarSupport(this.grid, sub, this.dist, (paths) => {
+							resultPaths = this.getShorterPaths(resultPaths, paths)
+						}).search()
+					}
+					if (resultPaths !== null) {
+						this.src.paths = [this.src, ...resultPaths]
+						this.src.searched = true
+						this.onFinish(this.src.paths)
+					} else {
+						this.src.searched = true
+					}
+				}
+			})
+		})
+
 	}
 	private getShorterPaths(currentPaths: Box[], newPaths: Box[]) {
 		if (currentPaths == null) {
