@@ -128,16 +128,10 @@ class AStarSupport {
 		} else {
 			const subList = this.src.getNeighbour()
 			subList.sort((o1, o2) => this.grid.compare(o1, o2, this.dist))
-			let resultPaths = null
+			let resultPaths: Box[] = null
 			for (let sub of subList) {
 				new AStarSupport(this.grid, sub, this.dist, (paths) => {
-					if (resultPaths == null) {
-						resultPaths = paths
-					} else {
-						if (resultPaths.length > paths.length) {
-							resultPaths = paths
-						}
-					}
+					resultPaths = this.getShorterPaths(resultPaths, paths)
 				}).search()
 			}
 			if (resultPaths !== null) {
@@ -146,7 +140,17 @@ class AStarSupport {
 		}
 		this.src.usable = true
 	}
-
+	private getShorterPaths(currentPaths: Box[], newPaths: Box[]) {
+		if (currentPaths == null) {
+			return newPaths
+		} else {
+			if (newPaths.length < currentPaths.length) {
+				return newPaths
+			} else {
+				return currentPaths
+			}
+		}
+	}
 }
 
 class Position {
