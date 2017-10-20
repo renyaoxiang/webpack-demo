@@ -22,9 +22,7 @@ $(() => {
 	const end = Position.of(4, 4);
 	let shortest: Box[] = new Array(width * height);
 	const onFinish = (paths: Box[]) => {
-		if (shortest.length > paths.length) {
-			shortest = paths
-		}
+		shortest = paths
 	}
 	new AStar(grid, start, end, onFinish).search()
 	grid.print(shortest)
@@ -123,10 +121,20 @@ class AStarSupport {
 			this.onFinish([this.src])
 		} else {
 			const subList = this.src.getNeighbour()
+			let resultPaths = null
 			for (let sub of subList) {
 				new AStarSupport(this.grid, sub, this.dist, (paths) => {
-					this.onFinish([this.src, ...paths])
+					if (resultPaths != null) {
+						resultPaths = paths
+					} else {
+						if (resultPaths.length > paths.length) {
+							resultPaths = paths
+						}
+					}
 				}).search()
+			}
+			if (resultPaths !== null) {
+				this.onFinish([this.src, ...resultPaths])
 			}
 		}
 		this.src.usable = true
