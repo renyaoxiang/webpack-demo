@@ -69,6 +69,6 @@ module.exports = [{
 			chunks: ['astar'],
 			hash: true,
 			inject: 'head'
-		})
+		}),
 	]
 }]
