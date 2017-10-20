@@ -45,6 +45,12 @@ class AStar {
 
 
 class Grid {
+	compare(o1: Box, o2: Box, dist: Box): any {
+		const p0 = dist.getPostion()
+		const p1 = o1.getPostion()
+		const p2 = o2.getPostion()
+		return Math.pow(p0.w - p1.w, 2) + Math.pow(p0.h - p1.h, 2) - Math.pow(p0.w - p2.w, 2) - Math.pow(p0.h - p2.h, 2)
+	}
 	private boxList: Box[] = []
 	constructor(public readonly width: number, public readonly height: number) {
 		this.boxList = new Array(width * height)
@@ -121,6 +127,7 @@ class AStarSupport {
 			this.onFinish([this.src])
 		} else {
 			const subList = this.src.getNeighbour()
+			subList.sort((o1, o2) => this.grid.compare(o1, o2, this.dist))
 			let resultPaths = null
 			for (let sub of subList) {
 				new AStarSupport(this.grid, sub, this.dist, (paths) => {
