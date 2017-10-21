@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --progress --colors --host 127.0.0.1 --port 8880 --inline --content-base src/",
-    "dev": "webpack-dev-server  --progress --colors --hot --port 8880 --inline --content-base ./dist",
+    "start": "webpack-dev-server --progress --colors --host 127.0.0.1 --port 8881 --inline --content-base src/",
+    "dev": "webpack-dev-server  --progress --colors --hot --port 8881 --inline --content-base ./dist",
     "build": "webpack --progress --colors"
   },
   "author": "",

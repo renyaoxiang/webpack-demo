@@ -1,6 +1,7 @@
 import * as $ from 'jquery'
 import * as _ from 'lodash'
 import { table } from 'table'
+import { Stat1, Store, } from '../../../lib/functions';
 
 
 
@@ -18,40 +19,31 @@ $(() => {
 	})
 	grid.print()
 
-	const start = Position.of(0, 0);
-	const end = Position.of(4, 4);
-	let shortest: Box[] = new Array(width * height);
-	const onFinish = (paths: Box[]) => {
-		shortest = paths
+	const startPosition = Position.of(0, 0);
+	const endPosition = Position.of(4, 4);
+
+	const onFinish: Stat1<Box[]> = (path: Box[]) => {
+		if (path !== null) {
+			grid.print(path)
+		} else {
+			console.log('not find')
+		}
 	}
-	new AStar(grid, start, end, onFinish).search()
-	grid.print(shortest)
-	shortest.forEach(it => console.log(it))
+	const start: Box = grid.getBox(startPosition)
+	const end: Box = grid.getBox(endPosition)
+	start.getPath(end, onFinish)
 })
 
 
-class AStar {
-	constructor(public readonly grid: Grid, public readonly src: Position,
-		public readonly dist: Position, private readonly onFinish: (paths: Box[]) => void) {
-	}
-	public search() {
-		const srcBox = this.grid.getBox(this.src)
-		const distBox = this.grid.getBox(this.dist)
-		new AStarSupport(this.grid, srcBox, distBox, (paths: Box[]) => {
-			this.onFinish([...paths])
-		}).search()
-	}
-}
-
 
 class Grid {
+	private boxList: Box[] = []
 	compare(o1: Box, o2: Box, dist: Box): any {
 		const p0 = dist.getPostion()
 		const p1 = o1.getPostion()
 		const p2 = o2.getPostion()
 		return Math.pow(p0.w - p1.w, 2) + Math.pow(p0.h - p1.h, 2) - Math.pow(p0.w - p2.w, 2) - Math.pow(p0.h - p2.h, 2)
 	}
-	private boxList: Box[] = []
 	constructor(public readonly width: number, public readonly height: number) {
 		this.boxList = new Array(width * height)
 		for (let h = 0; h < height; h++) {
@@ -64,10 +56,10 @@ class Grid {
 	forEach(callback: (box: Box) => void) {
 		this.boxList.forEach(callback)
 	}
-	print(paths: Box[] = []) {
+	print(path: Box[] = []) {
 		const data = _.chunk(this.boxList.map(it => {
-			if (paths.includes(it)) {
-				return paths.indexOf(it)
+			if (path.includes(it)) {
+				return path.indexOf(it)
 			} else if (!it.isEmpty) {
 				return '|'
 			} else {
@@ -83,6 +75,46 @@ class Grid {
 }
 
 class Box {
+
+	private pathCache: Store<Box[]> = new Store<Box[]>()
+	private findPath(dist: Box, onFind: Stat1<Box[]>): void {
+		const result = new Store<Box[]>()
+		if (this.equals(dist)) {
+			result.data = [this]
+		} else {
+			const neighbour = this.getNeighbour()
+			const children = neighbour.sort((o1, o2) => this.grid.compare(o1, o2, dist))
+			const childrenResult = children.map(it => {
+				let _path = null
+				it.getPath(dist, (path) => { _path = path })
+				return _path
+			})
+			const shortestPath = childrenResult.reduce(this.getShorterPath, null)
+			result.data = shortestPath === null ? null : [this, ...shortestPath]
+		}
+		onFind(result.data)
+	}
+	private getShorterPath(o1: Box[], o2: Box[]): any {
+		if (o1 === null || o2 === null) {
+			return o1 || o2
+		} else {
+			return o1.length < o2.length ? o1 : o2
+		}
+	}
+
+
+	getPath(dist: Box, onFinish: Stat1<Box[]>): any {
+		if (this.pathCache.state) {
+		} else {
+			this.usable = false
+			this.findPath(dist, (path: Box[]) => {
+				this.usable = true
+				this.pathCache.data = path
+			})
+		}
+		onFinish(this.pathCache.data)
+
+	}
 	public usable: boolean = true
 	constructor(public readonly w: number, public readonly h: number,
 		public readonly grid: Grid, public isEmpty: boolean = true) {
@@ -115,38 +147,6 @@ class Box {
 	public equals(other: Box) {
 		return other != null && this.getPostion().equals(other.getPostion())
 	}
-}
-
-class AStarSupport {
-	constructor(public readonly grid: Grid, public readonly src: Box, public readonly dist: Box,
-		private readonly onFinish: (paths: Box[]) => void) {
-	}
-	public search() {
-		this.src.usable = false
-		if (this.src.equals(this.dist)) {
-			this.onFinish([this.src])
-		} else {
-			const subList = this.src.getNeighbour()
-			subList.sort((o1, o2) => this.grid.compare(o1, o2, this.dist))
-			let resultPaths = null
-			for (let sub of subList) {
-				new AStarSupport(this.grid, sub, this.dist, (paths) => {
-					if (resultPaths == null) {
-						resultPaths = paths
-					} else {
-						if (resultPaths.length > paths.length) {
-							resultPaths = paths
-						}
-					}
-				}).search()
-			}
-			if (resultPaths !== null) {
-				this.onFinish([this.src, ...resultPaths])
-			}
-		}
-		this.src.usable = true
-	}
-
 }
 
 class Position {
