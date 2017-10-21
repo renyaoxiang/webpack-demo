@@ -4,6 +4,7 @@ Dom.onReady().then(() => {
 	div.innerHTML = `
 			<ul>
 				<li><a href='/'>index</a></li>
+				<li><a href='/ai.html'>ai</a></li>
 				<li><a href='/astar.html'>astar</a></li>
 				<li><a href='/todo.html'>todo</a></li>
 				<li><a href='/redux.html'>redux</a></li>

@@ -7,8 +7,14 @@ export interface Stat1<A> {
 export interface Stat2<A1, A2> {
 	(arg1: A1, arg2: A2): void
 }
+export interface Stat3<A1, A2, A3> {
+	(arg1: A1, arg2: A2, arg3: A3): void
+}
 export interface Call0 {
 	(err: any): void
+}
+export class Pair<T1, T2>{
+	constructor(public first: T1, public second: T2) { }
 }
 export interface Call1<A> {
 	(err: any, arg: A): void
@@ -33,55 +39,60 @@ export function arrayif(obj: any = []): any[] {
 		return [obj]
 	}
 }
-
-export class Lock<T> {
-	constructor(private _lock: boolean = false, private _desc: T = null,
-		private beforeLock?: Stat0, private afterLock?: Stat0) {
-
+export function lazy(val: any): () => any {
+	if (typeof val === 'function') {
+		return val()
+	} else {
+		return () => val
 	}
-	get lock(): boolean {
+}
+
+export class Lock {
+	constructor(private _lock: boolean = false,
+		private before?: Stat0, private after?: Stat0) {
+	}
+	public static of(): Lock {
+		return new Lock()
+	}
+	get isLock(): boolean {
 		return this._lock
 	}
-	get free(): boolean {
+	get isFree(): boolean {
 		return !this._lock
 	}
-	startLock(beforeLock?: Stat0): void {
+	start(before?: Stat0): void {
 		this.checkFree()
-		if (this.beforeLock) {
-			this.beforeLock()
+		if (this.before) {
+			this.before()
 		}
-		if (beforeLock) {
-			beforeLock()
+		if (before) {
+			before()
 		}
 		this._lock = true
 	}
-	endlock(afterLock?: Stat0): void {
+	end(after?: Stat0): void {
 		this.checkLocking()
 		this._lock = false
-		if (afterLock) {
-			afterLock()
+		if (after) {
+			after()
 		}
-		if (this.afterLock) {
-			this.afterLock()
+		if (this.after) {
+			this.after()
 		}
 	}
-	lockAction(next: Stat0): void {
-		this.startLock()
-		next()
-		this.endlock()
-	}
-	getDesc(): T {
-		return this._desc
+	atom(action: Stat0, before?: Stat0, after?: Stat0): Lock {
+		this.start(before)
+		action()
+		this.end(after)
+		return this
 	}
 	private checkLocking(): void {
-		if (this._lock) {
-		} else {
+		if (!this._lock) {
 			throw new Exception('object locked')
 		}
 	}
 	private checkFree(): void {
-		if (!this._lock) {
-		} else {
+		if (this._lock) {
 			throw new Exception('object locked')
 		}
 	}
@@ -155,24 +166,39 @@ export class StatePromise<T>   {
 	private _resolve: Stat1<T>
 	private _reject: Stat1<any>
 	private _promise: Promise<T>
+	private _lock: Lock = new Lock()
 	constructor() {
 		this._promise = new Promise<T>((resolve, reject) => {
 			this._resolve = resolve
 			this._reject = reject
 		})
 	}
-	isFinished() {
+	get isFinished() {
 		return this._finished
+	}
+	action(action: Stat2<Stat1<T>, Stat1<any>>) {
+		this.checkWriteable()
+		if (this._lock.isLock) {
+			this._lock.atom(() => {
+				action((data?: T) => {
+					this.resolve(data)
+				}, (error?: any) => {
+					this.reject(error)
+				})
+			})
+		}
 	}
 	reject(error?: any) {
 		this.checkWriteable()
+		this._finished = true
 		this._reject(error)
 	}
-	resolve(data: T) {
+	resolve(data?: T) {
 		this.checkWriteable()
 		this._finished = true
+		this._resolve(data)
 	}
-	promise(): Promise<T> {
+	get promise(): Promise<T> {
 		return this._promise
 	}
 	private checkWriteable() {
@@ -183,7 +209,7 @@ export class StatePromise<T>   {
 
 
 }
-export class CacheablePromise<T> {
+export class StatesPromise<T> {
 	private _finished: boolean = false
 	private _resolve: Stat1<T>
 	private _reject: Stat1<any>
@@ -198,12 +224,12 @@ export class CacheablePromise<T> {
 	isFinished() {
 		return this._finished
 	}
-	resolveCache(data: T): this {
+	resolveData(data: T): this {
 		this.checkWriteable()
 		this._store.setData(data)
 		return this
 	}
-	rejectCache(error?: any): this {
+	rejectData(error?: any): this {
 		this.checkWriteable()
 		this._store.setError(error)
 		return this

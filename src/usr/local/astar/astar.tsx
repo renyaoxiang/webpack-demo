@@ -18,7 +18,7 @@ $(() => {
 	grid.print()
 
 	const startPosition = Position.of(2, 0);
-	const endPosition = Position.of(4, 0);
+	// const endPosition = Position.of(4, 0);
 
 	const onFinish: Stat1<Box[]> = (path: Box[]) => {
 		if (path !== null) {
@@ -28,17 +28,14 @@ $(() => {
 		}
 	}
 	const start: Box = grid.getBox(startPosition)
-	const end: Box = grid.getBox(endPosition)
-	onFinish(start.getPath(end))
-	grid.reset()
-	const box3: Box = grid.getBox(Position.of(0, 1))
+	const box3: Box = grid.getBox(Position.of(2, 3))
 	onFinish(start.getPath(box3))
 })
 
 
 
 class Grid {
-	private shortestPath: Box[] = null
+	private shortestPathStore: Store<Box[]> = new Store<Box[]>()
 	private boxList: Box[] = []
 	constructor(public readonly width: number, public readonly height: number) {
 		this.boxList = new Array(width * height)
@@ -49,14 +46,14 @@ class Grid {
 		}
 	}
 	reset() {
-		this.shortestPath = null
+		this.shortestPathStore.reset()
 		this.boxList.forEach(it => it.reset())
 	}
 	setShortestPath(path: Box[] = []): void {
-		this.shortestPath = path
+		this.shortestPathStore.data = path
 	}
-	getShortestPath(): Box[] {
-		return this.shortestPath
+	getShortestPathStore(): Store<Box[]> {
+		return this.shortestPathStore
 	}
 
 	compare(o1: Box, o2: Box, dist: Box): number {
@@ -103,17 +100,17 @@ class Grid {
 class Box {
 
 	private pathCache: Store<Box[]> = new Store<Box[]>()
-	private lock: Lock<void> = new Lock()
+	private lock: Lock = new Lock()
 	private prePath: Box[] = []
 	constructor(public readonly w: number, public readonly h: number,
 		public readonly grid: Grid, public isEmpty: boolean = true) {
 	}
 	reset() {
 		this.pathCache = new Store<Box[]>()
-		this.lock = new Lock<void>()
+		this.lock = new Lock()
 		this.prePath = []
 	}
-	updateData(path: Box[]) {
+	updatePath(path: Box[]) {
 		this.pathCache.data = path
 	}
 	private searchPath(dist: Box): Box[] {
@@ -147,23 +144,27 @@ class Box {
 	}
 
 	private updateShortestPath(path: Box[]): void {
-		let shortestPath = this.grid.getShortestPath()
-		if (shortestPath === null || path === null) {
-			shortestPath = shortestPath || path
+		const store = this.grid.getShortestPathStore()
+		let shortestPath = store.data
+		if (!store.state) {
+			shortestPath = path
 		} else {
-			shortestPath = path.length < shortestPath.length ? path : shortestPath
+			if (shortestPath === null || path === null) {
+				shortestPath = shortestPath || path
+			} else {
+				shortestPath = path.length < shortestPath.length ? path : shortestPath
+			}
 		}
-		shortestPath.forEach(it => it.updateData(path.slice(path.indexOf(it))))
-		this.grid.setShortestPath(shortestPath)
+		shortestPath.forEach(it => it.updatePath(path.slice(path.indexOf(it))))
+		store.data = shortestPath
 	}
 	evaluateAndSortNeighbours(dist: Box, neighbours: Box[]): Box[] {
 		return [...neighbours].sort((o1, o2) => this.grid.compare(o1, o2, dist))
 	}
 	getPath(dist: Box): Box[] {
 		if (!this.pathCache.state || this.pathCache.data !== null) {
-			this.lock.lockAction(() => {
+			this.lock.atom(() => {
 				if (this.shouldTry()) {
-					console.log(this)
 					this.pathCache.data = this.searchPath(dist)
 				} else {
 					this.pathCache.data = null
@@ -173,8 +174,8 @@ class Box {
 		return this.pathCache.data
 	}
 	shouldTry(): boolean {
-		const shortestPath = this.grid.getShortestPath()
-		return shortestPath === null || this.prePath.length < shortestPath.length
+		const shortestPathStore = this.grid.getShortestPathStore()
+		return !shortestPathStore.state || this.prePath.length < shortestPathStore.data.length
 	}
 	getPostion() {
 		return Position.of(this.w, this.h)
@@ -183,7 +184,7 @@ class Box {
 		return this.getNeighbourPosition(this.getPostion())
 			.map(it => this.grid.getBox(it))
 			.filter(it => it.isEmpty)
-			.filter(it => it.lock.free)
+			.filter(it => it.lock.isFree)
 	}
 	private getNeighbourPosition(position: Position): Position[] {
 		const subPosition1 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h))

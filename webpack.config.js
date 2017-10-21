@@ -5,7 +5,9 @@ module.exports = [{
 	devtool: 'inline-source-map',
 	entry: {
 		index: ['./src/boot/index.ts'],
+		ai: ['./src/usr/local/ai/ai.tsx'],
 		astar: ['./src/usr/local/astar/astar.tsx'],
+		astar2: ['./src/usr/local/astar/astar2.tsx'],
 		todo: ['./src/usr/local/todo/todo.tsx'],
 		redux: ['./src/usr/local/redux/redux.tsx'],
 		'react-redux': ['./src/usr/local/react-redux/react-redux.tsx'],
@@ -67,6 +69,18 @@ module.exports = [{
 		new HtmlWebpackPlugin({
 			filename: 'astar.html',
 			chunks: ['astar'],
+			hash: true,
+			inject: 'head'
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'astar2.html',
+			chunks: ['astar2'],
+			hash: true,
+			inject: 'head'
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'ai.html',
+			chunks: ['ai'],
 			hash: true,
 			inject: 'head'
 		}),

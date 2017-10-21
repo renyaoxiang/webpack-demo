@@ -1,7 +1,6 @@
 {
-	"defaultSeverity": "error",
-	"extends": [
-	],
+	"defaultSeverity": "warn",
+	"extends": [],
 	"jsRules": {},
 	"rules": {
 		"object-literal-shorthand": false,
@@ -16,22 +15,15 @@
 		"trailing-comma": [
 			false
 		],
-		"no-console": [
-			"log"
-		],
+		"no-console": false,
 		"callable-types": false,
 		"no-unused-expression": false,
 		"max-classes-per-file": [
 			false
 		],
 		"eofline": true,
-		"semicolon": [
-			"never"
-		],
-		"quotemark": [
-			"single",
-			"jsx-single"
-		],
+		"semicolon": false,
+		"quotemark": false,
 		"indent": [
 			true,
 			"tabs",
