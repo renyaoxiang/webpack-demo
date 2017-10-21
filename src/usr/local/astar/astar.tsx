@@ -1,9 +1,7 @@
 import * as $ from 'jquery'
 import * as _ from 'lodash'
 import { table } from 'table'
-import { Stat1, Store, } from '../../../lib/functions';
-
-
+import { Stat1, Store, Lock, } from '../../../lib/functions';
 
 $(() => {
 	const wall: Position[] = [Position.of(3, 0), Position.of(3, 1), Position.of(3, 2), Position.of(3, 3)]
@@ -19,8 +17,8 @@ $(() => {
 	})
 	grid.print()
 
-	const startPosition = Position.of(0, 0);
-	const endPosition = Position.of(4, 4);
+	const startPosition = Position.of(2, 0);
+	const endPosition = Position.of(4, 0);
 
 	const onFinish: Stat1<Box[]> = (path: Box[]) => {
 		if (path !== null) {
@@ -31,19 +29,17 @@ $(() => {
 	}
 	const start: Box = grid.getBox(startPosition)
 	const end: Box = grid.getBox(endPosition)
-	start.getPath(end, onFinish)
+	onFinish(start.getPath(end))
+	grid.reset()
+	const box3: Box = grid.getBox(Position.of(0, 1))
+	onFinish(start.getPath(box3))
 })
 
 
 
 class Grid {
+	private shortestPath: Box[] = null
 	private boxList: Box[] = []
-	compare(o1: Box, o2: Box, dist: Box): any {
-		const p0 = dist.getPostion()
-		const p1 = o1.getPostion()
-		const p2 = o2.getPostion()
-		return Math.pow(p0.w - p1.w, 2) + Math.pow(p0.h - p1.h, 2) - Math.pow(p0.w - p2.w, 2) - Math.pow(p0.h - p2.h, 2)
-	}
 	constructor(public readonly width: number, public readonly height: number) {
 		this.boxList = new Array(width * height)
 		for (let h = 0; h < height; h++) {
@@ -52,21 +48,51 @@ class Grid {
 			}
 		}
 	}
+	reset() {
+		this.shortestPath = null
+		this.boxList.forEach(it => it.reset())
+	}
+	setShortestPath(path: Box[] = []): void {
+		this.shortestPath = path
+	}
+	getShortestPath(): Box[] {
+		return this.shortestPath
+	}
+
+	compare(o1: Box, o2: Box, dist: Box): number {
+		const p0 = dist.getPostion()
+		const p1 = o1.getPostion()
+		const p2 = o2.getPostion()
+		return Math.pow(p0.w - p1.w, 2) + Math.pow(p0.h - p1.h, 2)
+			- Math.pow(p0.w - p2.w, 2) - Math.pow(p0.h - p2.h, 2)
+	}
 
 	forEach(callback: (box: Box) => void) {
 		this.boxList.forEach(callback)
 	}
 	print(path: Box[] = []) {
+		path = path || []
 		const data = _.chunk(this.boxList.map(it => {
 			if (path.includes(it)) {
 				return path.indexOf(it)
 			} else if (!it.isEmpty) {
 				return '|'
 			} else {
-				return ' '
+				const position = it.getPostion()
+				return path.length === 0 ? `${position.w}${position.h}` : ' '
 			}
 		}), this.width)
 		console.log(table(data))
+	}
+	printPath(path: Box[] = []) {
+		path = path || []
+		const tableData = path.map(it => {
+			const p = it.getPostion()
+			return `${p.w}${p.h}`
+		})
+		if (tableData.length > 0) {
+			console.log(table([tableData]))
+		}
 	}
 	getBox(position: Position) {
 		const index = position.h * this.width + position.w
@@ -77,22 +103,40 @@ class Grid {
 class Box {
 
 	private pathCache: Store<Box[]> = new Store<Box[]>()
-	private findPath(dist: Box, onFind: Stat1<Box[]>): void {
+	private lock: Lock<void> = new Lock()
+	private prePath: Box[] = []
+	constructor(public readonly w: number, public readonly h: number,
+		public readonly grid: Grid, public isEmpty: boolean = true) {
+	}
+	reset() {
+		this.pathCache = new Store<Box[]>()
+		this.lock = new Lock<void>()
+		this.prePath = []
+	}
+	updateData(path: Box[]) {
+		this.pathCache.data = path
+	}
+	private searchPath(dist: Box): Box[] {
 		const result = new Store<Box[]>()
 		if (this.equals(dist)) {
 			result.data = [this]
+			this.updateShortestPath([...this.prePath, this])
 		} else {
-			const neighbour = this.getNeighbour()
-			const children = neighbour.sort((o1, o2) => this.grid.compare(o1, o2, dist))
-			const childrenResult = children.map(it => {
-				let _path = null
-				it.getPath(dist, (path) => { _path = path })
-				return _path
+			const neighbours = this.getNeighbours()
+			const sortedNeighbour = this.evaluateAndSortNeighbours(dist, neighbours)
+			const neighbourPaths = sortedNeighbour.map(it => {
+				it.prePath = [...this.prePath]
+				return it.getPath(dist)
 			})
-			const shortestPath = childrenResult.reduce(this.getShorterPath, null)
-			result.data = shortestPath === null ? null : [this, ...shortestPath]
+			const shortestPath = neighbourPaths.reduce(this.getShorterPath, null)
+			if (shortestPath === null) {
+				result.data = null
+			} else {
+				result.data = [this, ...shortestPath]
+				this.updateShortestPath([...this.prePath, this, ...shortestPath])
+			}
 		}
-		onFind(result.data)
+		return result.data
 	}
 	private getShorterPath(o1: Box[], o2: Box[]): any {
 		if (o1 === null || o2 === null) {
@@ -102,45 +146,51 @@ class Box {
 		}
 	}
 
-
-	getPath(dist: Box, onFinish: Stat1<Box[]>): any {
-		if (this.pathCache.state) {
+	private updateShortestPath(path: Box[]): void {
+		let shortestPath = this.grid.getShortestPath()
+		if (shortestPath === null || path === null) {
+			shortestPath = shortestPath || path
 		} else {
-			this.usable = false
-			this.findPath(dist, (path: Box[]) => {
-				this.usable = true
-				this.pathCache.data = path
+			shortestPath = path.length < shortestPath.length ? path : shortestPath
+		}
+		shortestPath.forEach(it => it.updateData(path.slice(path.indexOf(it))))
+		this.grid.setShortestPath(shortestPath)
+	}
+	evaluateAndSortNeighbours(dist: Box, neighbours: Box[]): Box[] {
+		return [...neighbours].sort((o1, o2) => this.grid.compare(o1, o2, dist))
+	}
+	getPath(dist: Box): Box[] {
+		if (!this.pathCache.state || this.pathCache.data !== null) {
+			this.lock.lockAction(() => {
+				if (this.shouldTry()) {
+					console.log(this)
+					this.pathCache.data = this.searchPath(dist)
+				} else {
+					this.pathCache.data = null
+				}
 			})
 		}
-		onFinish(this.pathCache.data)
-
+		return this.pathCache.data
 	}
-	public usable: boolean = true
-	constructor(public readonly w: number, public readonly h: number,
-		public readonly grid: Grid, public isEmpty: boolean = true) {
+	shouldTry(): boolean {
+		const shortestPath = this.grid.getShortestPath()
+		return shortestPath === null || this.prePath.length < shortestPath.length
 	}
 	getPostion() {
 		return Position.of(this.w, this.h)
 	}
-	getNeighbour() {
+	getNeighbours() {
 		return this.getNeighbourPosition(this.getPostion())
-			.map(it => this.grid.getBox(it)).filter(it => it.isEmpty).filter(it => it.usable)
-	}
-	toString() {
-		return JSON.stringify({
-			w: this.w,
-			h: this.h
-		})
+			.map(it => this.grid.getBox(it))
+			.filter(it => it.isEmpty)
+			.filter(it => it.lock.free)
 	}
 	private getNeighbourPosition(position: Position): Position[] {
-		if (!position) {
-			return []
-		}
 		const subPosition1 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h))
 		const subPosition2 = [(position.h - 1), (position.h + 1)].map(it => new Position(position.w, it))
 		const subPosition3 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h + 1))
 		const subPosition4 = [(position.w - 1), (position.w + 1)].map(it => new Position(it, position.h - 1))
-		return [...subPosition1, ...subPosition2, ...subPosition3, ...subPosition4].filter(it => {
+		return _.flatMap([subPosition1, subPosition2, subPosition3, subPosition4]).filter(it => {
 			return it.w >= 0 && it.h >= 0 && it.w < this.grid.width && it.h < this.grid.height
 		})
 	}
@@ -158,16 +208,10 @@ class Position {
 			h: this.h
 		})
 	}
-	public static equals(position1: Position, position2: Position) {
-		return position1 !== null && position1.equals(position2)
-	}
 	public equals(position: Position) {
 		return this.w === position.w && this.h === position.h
 	}
 	public static of(x: number, y: number): Position {
 		return new Position(x, y)
-	}
-	public static clone(other: Position): Position {
-		return new Position(other.w, other.h)
 	}
 }

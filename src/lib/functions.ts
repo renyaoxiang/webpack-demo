@@ -39,11 +39,14 @@ export class Lock<T> {
 		private beforeLock?: Stat0, private afterLock?: Stat0) {
 
 	}
-	locking(): boolean {
+	get lock(): boolean {
 		return this._lock
 	}
-	lock(beforeLock?: Stat0): this {
-		this.checkUnlocking()
+	get free(): boolean {
+		return !this._lock
+	}
+	startLock(beforeLock?: Stat0): void {
+		this.checkFree()
 		if (this.beforeLock) {
 			this.beforeLock()
 		}
@@ -51,9 +54,8 @@ export class Lock<T> {
 			beforeLock()
 		}
 		this._lock = true
-		return this
 	}
-	unlock(afterLock?: Stat0): this {
+	endlock(afterLock?: Stat0): void {
 		this.checkLocking()
 		this._lock = false
 		if (afterLock) {
@@ -62,26 +64,23 @@ export class Lock<T> {
 		if (this.afterLock) {
 			this.afterLock()
 		}
-		return this
 	}
-	doAction(next: Stat0): this {
-		this.checkUnlocking()
-		this.lock()
+	lockAction(next: Stat0): void {
+		this.startLock()
 		next()
-		this.unlock()
-		return this
+		this.endlock()
 	}
 	getDesc(): T {
 		return this._desc
 	}
-	private checkUnlocking(): void {
-		if (!this._lock) {
+	private checkLocking(): void {
+		if (this._lock) {
 		} else {
 			throw new Exception('object locked')
 		}
 	}
-	private checkLocking(): void {
-		if (this._lock) {
+	private checkFree(): void {
+		if (!this._lock) {
 		} else {
 			throw new Exception('object locked')
 		}
