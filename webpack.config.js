@@ -6,6 +6,7 @@ module.exports = [{
 	entry: {
 		index: ['./src/boot/index.ts'],
 		ai: ['./src/usr/local/ai/ai.tsx'],
+		kmp: ['./src/usr/local/kmp/kmp.tsx'],
 		astar: ['./src/usr/local/astar/astar.tsx'],
 		astar2: ['./src/usr/local/astar/astar2.tsx'],
 		todo: ['./src/usr/local/todo/todo.tsx'],
@@ -81,6 +82,12 @@ module.exports = [{
 		new HtmlWebpackPlugin({
 			filename: 'ai.html',
 			chunks: ['ai'],
+			hash: true,
+			inject: 'head'
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'kmp.html',
+			chunks: ['kmp'],
 			hash: true,
 			inject: 'head'
 		}),
