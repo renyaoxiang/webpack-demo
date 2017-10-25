@@ -1,7 +1,7 @@
 import * as $ from 'jquery'
 import * as _ from 'lodash'
 import { table } from 'table'
-import { Stat1, Stat3 } from '../../../lib/functions';
+import { Call1, Call3 } from '../../../lib/functions';
 import { Pair, Store } from '../../../lib/index';
 
 $(() => {
@@ -18,7 +18,7 @@ $(() => {
 	const startPosition = Position.of(0, 0);
 	const endPosition = Position.of(4, 0);
 
-	const onFind: Stat1<Box[]> = (path: Box[]) => {
+	const onFind: Call1<Box[]> = (path: Box[]) => {
 		grid.print(path)
 	}
 	const start: Box = grid.getBox(startPosition)
@@ -30,7 +30,7 @@ $(() => {
 class AStar {
 
 	private shortestPath: Store<Box[]>[] = []
-	constructor(private grid: Grid, private start: Box, private end: Box, private onFind: Stat1<Box[]>) {
+	constructor(private grid: Grid, private start: Box, private end: Box, private onFind: Call1<Box[]>) {
 		this.grid.forEach((it) => {
 			this.shortestPath.push(new Store<Box[]>())
 		})
@@ -61,7 +61,7 @@ class AStar {
 	}
 	search() {
 
-		const getConnector: Stat3<Box, Box, Stat1<Pair<Box, Box>>> = (start: Box, end: Box, onGetConnector: Stat1<Pair<Box, Box>>) => {
+		const getConnector: Call3<Box, Box, Call1<Pair<Box, Box>>> = (start: Box, end: Box, onGetConnector: Call1<Pair<Box, Box>>) => {
 			this.lockBox(start)
 			const neighbours = this.grid.getNeighbours(start).filter(it => !this.isLocking(it))
 			neighbours.forEach(it => {
@@ -70,7 +70,7 @@ class AStar {
 			this.unLockBox(start)
 		}
 		const cartesianProduct = (path1: Box[][], path2: Box[][],
-			onGetCartesianProduct: Stat1<Box[]>) => {
+			onGetCartesianProduct: Call1<Box[]>) => {
 			const getMinPath = (paths: Box[][]): Store<Box[]> => {
 				const result = new Store<Box[]>()
 				paths.forEach(it => {
@@ -89,8 +89,8 @@ class AStar {
 			}
 		}
 
-		const getAllPath = (start: Box, end: Box, getConnector: Stat3<Box, Box, Stat1<Pair<Box, Box>>>,
-			onGetPath: Stat1<Box[]>) => {
+		const getAllPath = (start: Box, end: Box, getConnector: Call3<Box, Box, Call1<Pair<Box, Box>>>,
+			onGetPath: Call1<Box[]>) => {
 			if (start.equals(end)) {
 				onGetPath([end])
 			} else {

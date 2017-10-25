@@ -1,26 +1,17 @@
-export interface Stat0 {
+export interface Call {
 	(): void
 }
-export interface Stat1<A> {
+export interface Call1<A> {
 	(arg: A): void
 }
-export interface Stat2<A1, A2> {
+export interface Call2<A1, A2> {
 	(arg1: A1, arg2: A2): void
 }
-export interface Stat3<A1, A2, A3> {
+export interface Call3<A1, A2, A3> {
 	(arg1: A1, arg2: A2, arg3: A3): void
-}
-export interface Call0 {
-	(err: any): void
 }
 export class Pair<T1, T2>{
 	constructor(public first: T1, public second: T2) { }
-}
-export interface Call1<A> {
-	(err: any, arg: A): void
-}
-export interface Call2<A1, A2> {
-	(err: any, arg1: A1, arg2: A2): void
 }
 export interface Fun0<T> {
 	(): T
@@ -49,7 +40,7 @@ export function lazy(val: any): () => any {
 
 export class Lock {
 	constructor(private _lock: boolean = false,
-		private before?: Stat0, private after?: Stat0) {
+		private before?: Call, private after?: Call) {
 	}
 	public static of(): Lock {
 		return new Lock()
@@ -60,7 +51,7 @@ export class Lock {
 	get isFree(): boolean {
 		return !this._lock
 	}
-	start(before?: Stat0): void {
+	start(before?: Call): void {
 		this.checkFree()
 		if (this.before) {
 			this.before()
@@ -70,7 +61,7 @@ export class Lock {
 		}
 		this._lock = true
 	}
-	end(after?: Stat0): void {
+	end(after?: Call): void {
 		this.checkLocking()
 		this._lock = false
 		if (after) {
@@ -80,7 +71,7 @@ export class Lock {
 			this.after()
 		}
 	}
-	atom(action: Stat0, before?: Stat0, after?: Stat0): Lock {
+	atom(action: Call, before?: Call, after?: Call): Lock {
 		this.start(before)
 		action()
 		this.end(after)
@@ -163,8 +154,8 @@ export class StandardStore<T>{
 }
 export class StatePromise<T>   {
 	private _finished: boolean = false
-	private _resolve: Stat1<T>
-	private _reject: Stat1<any>
+	private _resolve: Call1<T>
+	private _reject: Call1<any>
 	private _promise: Promise<T>
 	private _lock: Lock = new Lock()
 	constructor() {
@@ -176,7 +167,7 @@ export class StatePromise<T>   {
 	get isFinished() {
 		return this._finished
 	}
-	action(action: Stat2<Stat1<T>, Stat1<any>>) {
+	action(action: Call2<Call1<T>, Call1<any>>) {
 		this.checkWriteable()
 		if (this._lock.isLock) {
 			this._lock.atom(() => {
@@ -206,13 +197,12 @@ export class StatePromise<T>   {
 			throw new Exception('result has been setted')
 		}
 	}
-
-
 }
+
 export class StatesPromise<T> {
 	private _finished: boolean = false
-	private _resolve: Stat1<T>
-	private _reject: Stat1<any>
+	private _resolve: Call1<T>
+	private _reject: Call1<any>
 	private _promise: Promise<T>
 	private _store: StandardStore<T> = new StandardStore<T>()
 	constructor() {
@@ -262,7 +252,7 @@ export class Exception extends Error {
 	}
 }
 
-export function lazyValue<T>(value: Stat0 | any): T {
+export function lazyValue<T>(value: Call | any): T {
 	if (typeof value === 'function') {
 		return value()
 	} else {

@@ -1,7 +1,7 @@
 import * as $ from 'jquery'
 import * as _ from 'lodash'
 import { table } from 'table'
-import { Stat1, Store, Lock, } from '../../../lib/functions';
+import { Call1, Store, Lock, } from '../../../lib/functions';
 
 $(() => {
 	const wall: Position[] = [Position.of(3, 0), Position.of(3, 1), Position.of(3, 2), Position.of(3, 3)]
@@ -20,7 +20,7 @@ $(() => {
 	const startPosition = Position.of(2, 0);
 	// const endPosition = Position.of(4, 0);
 
-	const onFinish: Stat1<Box[]> = (path: Box[]) => {
+	const onFinish: Call1<Box[]> = (path: Box[]) => {
 		if (path !== null) {
 			grid.print(path)
 		} else {
