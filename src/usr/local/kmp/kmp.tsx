@@ -5,7 +5,7 @@ const algorithms = require('algorithms')
 $(() => {
 	const button = $(`<button type='button'>run</button>`).appendTo(document.body)
 	const text = 'abcdefadacdeffadsdfcdeffasdf'
-	const pattern = 'dedededdedede'
+	const pattern = 'de'
 	button.click(() => {
 
 		console.log(kmp.kmp(text, pattern))
@@ -25,25 +25,23 @@ class KMP {
 	search() {
 		const findedIndexList: number[] = []
 		const match = (text: string, pattern: string, onMatch: Call1<number>) => {
-			const getTextPrefixList = (pattern: string): number[] => {
-				let prefixIndexList: number[] = [0]
-				for (let start = 1; start < pattern.length;) {
-					let maxSuffixLength = -1
-					for (let suffixLength = start - 1; suffixLength > 0;) {
+			const getNextList = (pattern: string): number[] => {
+				let nextIndexList: number[] = []
+				for (let start = 0; start < pattern.length; start++) {
+					let nextIndex = -1
+					for (let suffixLength = start; suffixLength >= 1; suffixLength--) {
 						const prefixString = pattern.substring(0, suffixLength)
 						const suffixString = pattern.substring(start + 1 - suffixLength, start + 1)
 						if (prefixString === suffixString) {
-							maxSuffixLength = suffixLength
-						} else {
-							suffixLength--
+							nextIndex = suffixLength - 1
+							break;
 						}
 					}
-					prefixIndexList.push(maxSuffixLength)
+					nextIndexList.push(nextIndex)
 				}
-				return prefixIndexList
+				return nextIndexList
 			}
-			const prefixIndexList: number[] = getTextPrefixList(pattern)
-
+			const nextIndexList: number[] = getNextList(pattern)
 			for (let textCharIndex = 0, subTextCharIndex = 0,
 				maxTextCharIndex = text.length - pattern.length;
 				textCharIndex <= maxTextCharIndex;) {
@@ -54,21 +52,29 @@ class KMP {
 					subTextCharIndex = 0
 				}
 				const onFail = (failPatternIndex) => {
-					textCharIndex = textCharIndex + failPatternIndex - prefixIndexList[failPatternIndex]
-					subTextCharIndex = prefixIndexList[failPatternIndex]
+					if (nextIndexList[failPatternIndex] === -1) {
+						textCharIndex++
+						subTextCharIndex = 0
+					} else {
+						textCharIndex = textCharIndex + failPatternIndex - 1 - nextIndexList[failPatternIndex - 1]
+						subTextCharIndex = nextIndexList[failPatternIndex]
+					}
 				}
 				const matchSubText = (subText: string, pattern: string, subTextCharIndex: number,
 					onSuccess, onFail) => {
+					let state = true
 					for (; subTextCharIndex < pattern.length; subTextCharIndex++) {
-						if (subText.charAt(subTextCharIndex) === pattern.charAt(subTextCharIndex)) {
-							if (subTextCharIndex === pattern.length) {
-								onSuccess()
-								break
-							}
-						} else {
-							onFail(subTextCharIndex)
+						const textChar = subText.charAt(subTextCharIndex)
+						const patternChar = pattern.charAt(subTextCharIndex)
+						if (textChar !== patternChar) {
+							state = false
 							break
 						}
+					}
+					if (state) {
+						onSuccess()
+					} else {
+						onFail(subTextCharIndex)
 					}
 				}
 				matchSubText(subText, pattern, subTextCharIndex, onSuccess, onFail)
