@@ -8,11 +8,11 @@
 			"dom",
 			"es2017"
 		],
-		"allowUnreachableCode": true,
-		"allowUnusedLabels": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
+		"noUnusedLocals": false,
 		"sourceMap": true,
 		"jsx": "react"
 	}

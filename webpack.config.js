@@ -2,7 +2,7 @@ var webpack = require('webpack')
 
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = [{
-	devtool: 'inline-source-map',
+	devtool: 'source-map',
 	entry: {
 		index: ['./src/boot/index.ts'],
 		ai: ['./src/usr/local/ai/ai.tsx'],
@@ -26,8 +26,12 @@ module.exports = [{
 	module: {
 		rules: [{
 			test: /\.tsx?$/,
-			loader: 'ts-loader',
-			exclude: /node_modules/,
+			use: [
+				{
+					loader: 'ts-loader',
+					options: { transpileOnly: true }
+				}
+			]
 		}, {
 			test: /\.css$/,
 			use: [
