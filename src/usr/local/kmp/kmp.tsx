@@ -16,90 +16,9 @@ $(() => {
 		}
 		new BF(text, pattern, onFindAll).search()
 		new KMP(text, pattern, onFindAll).search()
-		new BM(text, pattern, onFindAll).search()
 	})
 })
 
-class BM {
-	constructor(private text: string, private pattern: string, private onFind: Call1<number[]>) {
-	}
-	getBadList = (pattern: string): number[] => {
-		let badList: number[] = []
-		for (let start = 0; start < pattern.length; start++) {
-			let nextIndex = -1
-			for (let suffixLength = start; suffixLength >= 1; suffixLength--) {
-				const prefixString = pattern.substring(0, suffixLength)
-				const suffixString = pattern.substring(start + 1 - suffixLength, start + 1)
-				if (prefixString === suffixString) {
-					nextIndex = suffixLength - 1
-					break;
-				}
-			}
-			badList.push(nextIndex)
-		}
-		return badList
-	}
-	getGoodList = (pattern: string): number[] => {
-		let goodList: number[] = []
-		for (let start = 0; start < pattern.length; start++) {
-			let nextIndex = -1
-			for (let suffixLength = start; suffixLength >= 1; suffixLength--) {
-				const prefixString = pattern.substring(0, suffixLength)
-				const suffixString = pattern.substring(start + 1 - suffixLength, start + 1)
-				if (prefixString === suffixString) {
-					nextIndex = suffixLength - 1
-					break;
-				}
-			}
-			goodList.push(nextIndex)
-		}
-		return goodList
-	}
-	search() {
-		const findedIndexList: number[] = []
-		const match = (text: string, pattern: string, onMatch: Call1<number>) => {
-			const goodList: number[] = this.getGoodList(pattern)
-			const badList: number[] = this.getBadList(pattern)
-			for (let textCharIndex = 0, subTextCharIndex = 0,
-				maxTextCharIndex = text.length - pattern.length;
-				textCharIndex <= maxTextCharIndex;) {
-				const subText = text.substr(textCharIndex, pattern.length)
-				const onSuccess = () => {
-					onMatch(textCharIndex)
-					textCharIndex++
-					subTextCharIndex = 0
-				}
-				const onFail = (failPatternIndex) => {
-					textCharIndex++
-					subTextCharIndex = 0
-				}
-				const matchSubText = (subText: string, pattern: string, subTextCharIndex: number,
-					onSuccess, onFail) => {
-					let state = true
-					for (; subTextCharIndex < pattern.length; subTextCharIndex++) {
-						const textChar = subText.charAt(subTextCharIndex)
-						const patternChar = pattern.charAt(subTextCharIndex)
-						if (textChar !== patternChar) {
-							state = false
-							break
-						}
-					}
-					if (state) {
-						onSuccess()
-					} else {
-						onFail(subTextCharIndex)
-					}
-				}
-				matchSubText(subText, pattern, subTextCharIndex, onSuccess, onFail)
-			}
-		}
-		const onMatch = (index) => {
-			findedIndexList.push(index)
-		}
-		match(this.text, this.pattern, onMatch)
-		this.onFind(findedIndexList)
-	}
-}
 
 class KMP {
 	constructor(private text: string, private pattern: string, private onFind: Call1<number[]>) {
@@ -123,7 +42,6 @@ class KMP {
 	search() {
 		const match = (text: string, pattern: string, onMatch: Call1<number>) => {
 			const nextList: number[] = this.getNextList(pattern)
-			console.log(nextList)
 			for (let textCharIndex = 0, subTextCharIndex = 0,
 				maxTextCharIndex = text.length - pattern.length;
 				textCharIndex <= maxTextCharIndex;) {
