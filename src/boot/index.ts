@@ -11,6 +11,7 @@ Dom.onReady().then(() => {
 				<li><a href='/redux.html'>redux</a></li>
 				<li><a href='/react-redux.html'>react-redux</a></li>
 				<li><a href='/reduxTodo.html'>reduxTodo</a></li>
+				<li><a href='/dumplicateSubStr.html'>reduxTodo</a></li>
 			</ul>
 		`;
 	document.body.appendChild(div);
