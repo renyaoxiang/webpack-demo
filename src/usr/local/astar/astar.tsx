@@ -1,9 +1,7 @@
-
-import * as $ from 'jquery'
-import * as _ from 'lodash'
-import { table } from 'table'
-import { Call1, Store, Lock, } from '../../../lib/functions';
-
+import * as $ from "jquery";
+import * as _ from "lodash";
+import { table } from "table";
+import { Call1, Store, Lock } from "../../../lib/functions";
 
 $(() => {
 	const wall: Position[] = [Position.of(3, 0), Position.of(3, 1), Position.of(3, 2), Position.of(3, 3)];

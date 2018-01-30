@@ -1,6 +1,6 @@
 {
 	"defaultSeverity": "warn",
-	"extends": [],
+	"extends": ["tslint-react"],
 	"jsRules": {},
 	"rules": {
 		"object-literal-shorthand": false,

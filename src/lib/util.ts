@@ -1,1 +1,1 @@
-export const none = ''
+export const none = "";
