@@ -8,27 +8,19 @@
 		"no-consecutive-blank-lines": false,
 		"arrow-parens": false,
 		"no-trailing-whitespace": true,
-		"ordered-imports": [
-			false
-		],
+		"ordered-imports": [false],
+		"jsx-no-multiline-js": false,
+		"jsx-no-lambda": false,
 		"object-literal-sort-keys": false,
-		"trailing-comma": [
-			false
-		],
+		"trailing-comma": [false],
 		"no-console": false,
 		"callable-types": false,
 		"no-unused-expression": false,
-		"max-classes-per-file": [
-			false
-		],
+		"max-classes-per-file": [false],
 		"eofline": true,
 		"semicolon": false,
 		"quotemark": false,
-		"indent": [
-			true,
-			"tabs",
-			4
-		]
+		"indent": [true, "tabs", 4]
 	},
 	"rulesDirectory": []
 }
