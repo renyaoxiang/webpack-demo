@@ -1,8 +1,8 @@
 import * as $ from "jquery";
 import * as _ from "lodash";
 import { table } from "table";
-import { Call1, Call3 } from "../../../lib/functions";
-import { Pair, Store } from "../../../lib/index";
+import { Call1, Call3 } from "../../shared/lib/functions";
+import { Pair, Store } from "../../shared/lib/index";
 
 $(() => {
 	const wall: Position[] = [Position.of(3, 0), Position.of(3, 1), Position.of(3, 2), Position.of(3, 3)];

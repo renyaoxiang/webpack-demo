@@ -1,21 +1,24 @@
 var webpack = require("webpack");
-
 var HtmlWebpackPlugin = require("html-webpack-plugin");
+const pageRoot = "./src/page";
+
+const entry = {
+	index: ["./src/page/index.ts"],
+	ai: ["./src/page/ai/ai.tsx"],
+	kmp: ["./src/page/kmp/kmp.tsx"],
+	astar: ["./src/page/astar/astar.tsx"],
+	astar2: ["./src/page/astar/astar2.tsx"],
+	todo: ["./src/page/todo/todo.tsx"],
+	redux: ["./src/page/redux/redux.tsx"],
+	reduxTodo: ["./src/page/redux-todo/reduxTodo.tsx"],
+	reactRedux: ["./src/page/react-redux/reactRedux.tsx"],
+	styles: ["./src/page/styles/styles.ts"],
+	dumplicateSubStr: ["./src/page/dumplicateSubStr/dumplicateSubStr.tsx"]
+};
 module.exports = [
 	{
 		devtool: "inline-source-map",
-		entry: {
-			index: ["./src/boot/index.ts"],
-			ai: ["./src/usr/local/ai/ai.tsx"],
-			kmp: ["./src/usr/local/kmp/kmp.tsx"],
-			astar: ["./src/usr/local/astar/astar.tsx"],
-			astar2: ["./src/usr/local/astar/astar2.tsx"],
-			todo: ["./src/usr/local/todo/todo.tsx"],
-			redux: ["./src/usr/local/redux/redux.tsx"],
-			"react-redux": ["./src/usr/local/react-redux/react-redux.tsx"],
-			reduxTodo: ["./src/usr/local/redux-todo/reduxTodo.tsx"],
-			dumplicateSubStr: ["./src/usr/local/dumplicateSubStr/dumplicateSubStr.tsx"]
-		},
+		entry: entry,
 		output: {
 			path: __dirname + "/dist/",
 			filename: "js/[name].js",
@@ -64,8 +67,8 @@ module.exports = [
 				inject: "head"
 			}),
 			new HtmlWebpackPlugin({
-				filename: "react-redux.html",
-				chunks: ["react-redux"],
+				filename: "reactRedux.html",
+				chunks: ["reactRedux"],
 				hash: true,
 				inject: "head"
 			}),
@@ -96,6 +99,12 @@ module.exports = [
 			new HtmlWebpackPlugin({
 				filename: "kmp.html",
 				chunks: ["kmp"],
+				hash: true,
+				inject: "head"
+			}),
+			new HtmlWebpackPlugin({
+				filename: "styles.html",
+				chunks: ["styles"],
 				hash: true,
 				inject: "head"
 			})

@@ -25,7 +25,7 @@ export class AppContent2 extends Component<any, any> {
 		return (
 			<div>
 				<div>
-					<button onClick={this.doCreate.bind(this)} disabled={readOnly}>
+					<button onClick={this.doCreate} disabled={readOnly}>
 						create
 					</button>
 					<button onClick={this.props.refresh} disabled={readOnly}>
@@ -36,17 +36,30 @@ export class AppContent2 extends Component<any, any> {
 					type="input"
 					disabled={readOnly}
 					ref={ref => (this.input = ref)}
-					onKeyUp={this.onKeyPress.bind(this)}
+					onKeyUp={this.onKeyPress}
 				/>
 				<ul>
 					{this.props.model.todos.map(it => {
 						return (
 							<li key={it.id}>
-								<span style={{ display: "inline-block", width: "50px" }}>{it.complete.toString()}</span>
-								<button onClick={() => this.remove(it.id)} disabled={readOnly}>
+								<span
+									style={{
+										display: "inline-block",
+										width: "50px"
+									}}
+								>
+									{it.complete.toString()}
+								</span>
+								<button
+									onClick={() => this.remove(it.id)}
+									disabled={readOnly}
+								>
 									remove
 								</button>
-								<button onClick={() => this.toggle(it.id)} disabled={readOnly}>
+								<button
+									onClick={() => this.toggle(it.id)}
+									disabled={readOnly}
+								>
 									toggle
 								</button>
 								|{it.id}|{it.text}|
@@ -63,18 +76,18 @@ export class AppContent2 extends Component<any, any> {
 	private toggle(id) {
 		this.props.toggle(id);
 	}
-	private onKeyPress(e: KeyboardEvent<HTMLInputElement>) {
+	private onKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.keyCode === 13) {
 			this.doCreate();
 		}
-	}
-	private doCreate() {
+	};
+	private doCreate = () => {
 		const text = this.input.value;
 		if (text) {
 			this.input.value = "";
 			this.props.create({ text });
 		}
-	}
+	};
 }
 const loadingStart = createAction("loading_start");
 const loadingFinish = createAction("loading_finish");

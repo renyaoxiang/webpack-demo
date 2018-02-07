@@ -1,5 +1,5 @@
-import { Dom } from "../lib";
-Dom.onReady().then(() => {
+import * as $ from "jquery";
+$(() => {
 	const div = document.createElement("div");
 	div.innerHTML = `
 			<ul>

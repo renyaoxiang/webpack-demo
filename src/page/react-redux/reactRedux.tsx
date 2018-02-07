@@ -6,7 +6,10 @@ import { createStore } from "redux";
 import { render } from "react-dom";
 
 $(start);
-const store = createStore(function reducer(init: { num: number } = { num: 0 }, action) {
+const store = createStore(function reducer(
+	init: { num: number } = { num: 0 },
+	action
+) {
 	switch (action.type) {
 		case "demo":
 			return {
@@ -24,7 +27,7 @@ function start() {
 const Container = props => {
 	return (
 		<Provider store={store}>
-			<App> </App>
+			<App />
 		</Provider>
 	);
 };

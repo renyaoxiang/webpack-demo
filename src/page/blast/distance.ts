@@ -34,7 +34,7 @@ class DistanceUtil {
 function main() {
 	const seq1 = "sf";
 	const seq2 = "fsf";
-	const blast = new Blast();
+	const blast = new DistanceUtil();
 	blast.getDistance(seq1, seq2, result => {
 		console.log(result);
 		console.log(1 - result / Math.max(seq1.length, seq2.length));

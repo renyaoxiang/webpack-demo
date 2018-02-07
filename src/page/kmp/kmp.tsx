@@ -1,5 +1,5 @@
 import * as $ from "jquery";
-import { Call, Call1, Call3 } from "../../../lib/index";
+import { Call, Call1, Call3 } from "../../shared/lib/index";
 import * as _ from "lodash";
 import * as math from "mathjs";
 const kmp = require("kmp-matcher");
