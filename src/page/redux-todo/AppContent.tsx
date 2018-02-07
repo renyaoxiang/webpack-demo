@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { createAction } from "redux-actions";
 
-export class AppContent2 extends Component<any, any> {
+export class AppContentSupport extends Component<any, any> {
 	private input: HTMLInputElement;
 	constructor(props, context) {
 		super(props, context);
@@ -92,8 +92,8 @@ export class AppContent2 extends Component<any, any> {
 const loadingStart = createAction("loading_start");
 const loadingFinish = createAction("loading_finish");
 const todoInit = createAction("todo_init", data => data);
-export const AppContent = connect(
-	state => ({
+export const AppContent = connect<any, any>(
+	(state: { [key: string]: any }) => ({
 		model: {
 			...state.todo,
 			readOnly: state.loading
@@ -128,7 +128,7 @@ export const AppContent = connect(
 			return (dispatch, getState) => Promise.resolve(123);
 		}
 	})
-)(AppContent2);
+)(AppContentSupport);
 
 function asyncAction(doAction: (onFinish) => void, onStart, onFinish) {
 	onStart();

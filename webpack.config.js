@@ -36,8 +36,42 @@ module.exports = [
 					exclude: /node_modules/
 				},
 				{
+					test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+					loader: "url-loader",
+					options: {
+						name: "resource/images/[name]_[hash].[ext]",
+						limit: 10000
+					}
+				},
+				{
 					test: /\.css$/,
-					use: ["style-loader", "css-loader"]
+					use: [
+						"style-loader",
+						{
+							loader: "css-loader",
+							options: {
+								modules: true,
+								localIdentName:
+									"[name]__[local]__[hash:base64:5]"
+							}
+						}
+					]
+				},
+				{
+					test: /\.scss$/,
+					use: [
+						"style-loader",
+						{
+							loader: "css-loader",
+							options: {
+								modules: true,
+								importLoaders: 1,
+								localIdentName:
+									"[name]__[local]__[hash:base64:5]"
+							}
+						},
+						"sass-loader"
+					]
 				}
 			]
 		},

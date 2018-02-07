@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import * as React from "react";
 import { Component } from "react";
-import { Provider } from "react-redux";
+import { Provider, connect } from "react-redux";
 import { createStore } from "redux";
 import { render } from "react-dom";
 
@@ -25,19 +25,14 @@ function start() {
 	render(<Container />, div);
 }
 const Container = props => {
-	return (
-		<Provider store={store}>
-			<App />
-		</Provider>
-	);
+	return <App />;
 };
 
 export class App extends Component<any, any> {
-	public render() {
+	render() {
 		return <div>{this.props.num}</div>;
 	}
 }
-executor(console.log, 123);
 function executor(op, ...data) {
 	function defaultOp() {
 		throw new Error("op error");

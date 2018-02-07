@@ -1,0 +1,12 @@
+$width: 10px;
+.outer {
+    border: 1px solid #666666;
+    height: 100px;
+    width: $width*2;
+    background: url('./avatar.png');
+    .inner {
+        margin: 20px;
+        height: 50px;
+        width: $width;
+    }
+}
