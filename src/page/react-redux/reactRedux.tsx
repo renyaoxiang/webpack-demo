@@ -8,12 +8,12 @@ import { render } from "react-dom";
 $(start);
 const store = createStore(function reducer(
 	init: { num: number } = { num: 0 },
-	action
+	action: { type: string; value: number }
 ) {
 	switch (action.type) {
-		case "demo":
+		case "plus":
 			return {
-				num: init.num + 1
+				num: init.num + action.value
 			};
 		default:
 			return init;
@@ -25,26 +25,31 @@ function start() {
 	render(<Container />, div);
 }
 const Container = props => {
-	return <App />;
+	const NewApp = connect(
+		state => state,
+		dispatch => ({
+			change: value => {
+				dispatch({
+					type: "plus",
+					value: value || 1
+				});
+			}
+		})
+	)(App);
+	return (
+		<Provider store={store}>
+			<NewApp />
+		</Provider>
+	);
 };
 
 export class App extends Component<any, any> {
+	private num: number = 0;
 	render() {
-		return <div>{this.props.num}</div>;
+		return (
+			<div onClick={() => this.props.change(this.num++)}>
+				{this.props.num}
+			</div>
+		);
 	}
-}
-function executor(op, ...data) {
-	function defaultOp() {
-		throw new Error("op error");
-	}
-	function wrapOp(newOp: any) {
-		if (typeof newOp === "function") {
-			return newOp;
-		} else {
-			return defaultOp;
-		}
-	}
-	return function execute() {
-		return wrapOp(op)(...data);
-	};
 }

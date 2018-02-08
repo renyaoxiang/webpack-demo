@@ -1,9 +1,14 @@
 {
+	"version": "2.7.0",
 	"compilerOptions": {
 		"experimentalDecorators": true,
-		"module": "es6",
+		"module": "commonjs",
 		"moduleResolution": "node",
 		"target": "es6",
+		"baseUrl": ".",
+		"paths": {
+			"*": ["src/*"]
+		},
 		"lib": ["dom", "es2017"],
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
