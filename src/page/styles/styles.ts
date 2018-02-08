@@ -1,8 +1,13 @@
 import * as $ from "jquery";
-import * as styles from "./styles.css";
 import * as scssStyles from "./styles.scss";
+import * as cssStyles from "./styles.css";
 import { Dom } from "shared/lib/dom";
 $(() => {
-	console.log(scssStyles);
-	console.log(styles);
+	$("<div/>", {
+		style: {
+			height: "200px",
+			width: "200px"
+		},
+		class: scssStyles.outer
+	}).appendTo(document.body);
 });
