@@ -4,6 +4,7 @@ var HtmlWebpackPlugin = require("html-webpack-plugin");
 const entries = {
 	entry: {
 		index: ["./src/page/index.ts"],
+		parser: ["./src/page/parser/parser.tsx"],
 		ai: ["./src/page/ai/ai.tsx"],
 		kmp: ["./src/page/kmp/kmp.tsx"],
 		astar: ["./src/page/astar/astar.tsx"],
@@ -106,6 +107,14 @@ const entries = {
 			template: "index.html",
 			filename: "kmp.html",
 			chunks: ["kmp", "vendor"],
+			hash: true,
+			inject: "head"
+		}),
+		new HtmlWebpackPlugin({
+			title: "parser",
+			template: "index.html",
+			filename: "parser.html",
+			chunks: ["parser", "vendor"],
 			hash: true,
 			inject: "head"
 		}),

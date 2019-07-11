@@ -7,8 +7,8 @@ import { render } from "react-dom";
 
 $(start);
 const store = createStore(function reducer(
-	init: { num: number } = { num: 0 },
-	action: { type: string; value: number }
+	init: any = { num: 0 },
+	action: any
 ) {
 	switch (action.type) {
 		case "plus":

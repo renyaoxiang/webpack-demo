@@ -4,6 +4,7 @@ $(() => {
 	div.innerHTML = `
 			<ul>
 				<li><a href='/'>index</a></li>
+				<li><a href='/parser.html'>parser</a></li>
 				<li><a href='/ai.html'>ai</a></li>
 				<li><a href='/kmp.html'>kmp</a></li>
 				<li><a href='/astar.html'>astar</a></li>
